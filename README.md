@@ -9,4 +9,5 @@ deploy: npm run deploy
 ## Libraries
 - gh-pages
 - three
-- react-three-fiber
+  - react-three-fiber
+  - drei

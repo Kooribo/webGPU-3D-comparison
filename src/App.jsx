@@ -1,25 +1,39 @@
+import { useEffect, useState } from "react";
 import "./App.css";
-import WebCanvas from "./WebCanvas";
+import scene from "./Scene.js";
+//import WebCanvas from "./WebCanvas";
 
 function App() {
+	const [isWebGPU, setIsWebGPU] = useState(false);
+
+	useEffect(() => {
+		scene(isWebGPU);
+	}, [isWebGPU]);
 	return (
 		<>
-			<h1>WebGPU - 3D Comparison</h1>
+			<h1>3D Comparison</h1>
+			{!navigator.gpu ? (
+				<div className="support-error">
+					It seems like your current browser does{" "}
+					<a
+						href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API#browser_compatibility"
+						target="_blank"
+						rel="noreferrer"
+					>
+						not support WebGPU
+					</a>
+				</div>
+			) : (
+				<div className="card" id="card">
+					<select onChange={(e) => setIsWebGPU(e.target.value === "true")}>
+						<option value={false}>webGL</option>
+						<option value={true}>webGPU</option>
+					</select>
+				</div>
+			)}
+
 			<div className="card-full">
-				{!navigator.gpu ? (
-					<div className="support-error">
-						It seems like your current browser does{" "}
-						<a
-							href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API#browser_compatibility"
-							target="_blank"
-							rel="noreferrer"
-						>
-							not support WebGPU
-						</a>
-					</div>
-				) : (
-					<WebCanvas />
-				)}
+				{isWebGPU ? <div id="c4" /> : <canvas id="c4" />}
 			</div>
 		</>
 	);
