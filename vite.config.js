@@ -13,8 +13,8 @@ export default defineConfig({
 			promiseImportName: (i) => `__tla_${i}`,
 		}),
 	],
-	base: "/webGPU-3D-comparison/",
 	build: {
 		target: "esnext",
+		base: "/webGPU-3D-comparison/", // for github pages, maybe move up later.
 	},
 });
