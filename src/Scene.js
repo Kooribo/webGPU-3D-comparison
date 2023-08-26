@@ -42,19 +42,21 @@ export default function webScene(webGPU) {
 	const fov = 75;
 	const aspect = 2;
 	const near = 1;
-	camera = new THREE.PerspectiveCamera(fov, aspect, near);
+	const far = 4000;
+	camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 	camera.position.z = 200;
 	camera.position.y = 100;
 
 	//controls
 	controls = new OrbitControls(camera, renderer.domElement);
-	controls.maxDistance = 1200;
+	controls.maxDistance = 1700;
 	controls.minDistance = 75;
 	controls.maxPolarAngle = Math.PI / 2;
 	controls.mouseButtons = {
 		LEFT: THREE.MOUSE.ROTATE,
 		MIDDLE: THREE.MOUSE.DOLLY,
 	};
+	controls.target.set(0, 100, 0);
 
 	// Check if stats and gui element already exist
 	const existingStatsElement = document.querySelector("#stats");
@@ -75,8 +77,8 @@ export default function webScene(webGPU) {
 	gui.domElement.id = "gui";
 
 	// Append the elements to the desired container
-	document.querySelector("#card").appendChild(stats.domElement);
 	document.querySelector("#card").appendChild(gui.domElement);
+	document.querySelector("#card").appendChild(stats.domElement);
 
 	// scene
 	scene = new THREE.Scene();
@@ -107,19 +109,8 @@ export default function webScene(webGPU) {
 		scene.background = bgTexture;
 	});
 
-	//add ground
-	const grassTexture = new THREE.TextureLoader().load("grass.png");
-	const grassMaterial = new THREE.MeshBasicMaterial({
-		map: grassTexture,
-		color: 0x555555,
-	});
-
-	const planeGeometry = new THREE.PlaneGeometry(2000, 2000, 1, 1);
-	const plane = new THREE.Mesh(planeGeometry, grassMaterial);
-
-	plane.position.set(0, 0, 0);
-	plane.rotation.x = Math.PI * -0.5;
-	scene.add(plane);
+	const helper = new THREE.GridHelper(2000, 50, 0x1c1c1c, 0x1c1c1c);
+	scene.add(helper);
 
 	// add moving particles in three.js like snow
 	// update particles like https://threejs.org/examples/?q=webgpu#webgpu_instance_mesh
@@ -134,7 +125,7 @@ export default function webScene(webGPU) {
 
 	group = new THREE.Group();
 	scene.add(renderParticlesSprite(particleCount));
-	gui.add({ particleCount }, "particleCount", 1, 5000, 100).onChange((v) => {
+	gui.add({ particleCount }, "particleCount", 1, 10000, 100).onChange((v) => {
 		scene.add(renderParticlesSprite(v));
 	});
 
@@ -161,7 +152,7 @@ function renderParticlesSprite(particleCount) {
 	gpuMaterial.opacityNode = textureNode.a;
 	gpuMaterial.transparent = true;
 
-	const material = isWebGPU ? gpuMaterial : glMaterial;
+	const material = glMaterial; //isWebGPU ? gpuMaterial : glMaterial;
 
 	group.children = [];
 	for (let a = 0; a < particleCount; a++) {
@@ -201,16 +192,16 @@ function renderParticlesInstance(particleCount) {
 	mesh.count = 10;
 }
 
-var counter = 0;
 // animation loop
-function render(time) {
+function render() {
 	// particles group animation
 	group.children.forEach((sprite) => {
-		sprite.position.y -= Math.random() * 0.5 + 0.2;
+		sprite.position.y -= Math.random() * 0.5 + 0.2; //mit Fallbeschleunigung? also wo sie sich schon befinden = schneller 9,81 m/s²
+		//todo add wiggle (sinus) animation with userdata?
 		if (sprite.position.y < 0) {
 			sprite.position.y = 500;
 			sprite.position.x = Math.random() * 1000 - 500;
-			sprite.position.x = Math.random() * 1000 - 500;
+			sprite.position.z = Math.random() * 1000 - 500;
 		}
 	});
 

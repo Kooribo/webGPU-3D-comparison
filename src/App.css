@@ -5,13 +5,53 @@ h1 {
 }
 
 .card {
-	margin-top: 5%;
+	margin-top: 40px;
+	padding-top: 10px;
+	height: 70px;
 	display: flex;
 	flex-direction: row;
+	justify-content: space-between;
+	background-color: #131313;
+
+	border-radius: 10px 10px 0px 0px;
+}
+
+.buttons {
+	padding: 10px;
+	display: flex;
+	justify-content: space-between;
+	width: 175px;
+	background-color: #242424;
+	border-radius: 10px 10px 0px 0px;
+}
+
+.select-button {
+	border: none;
+	font-family: Ubuntu;
+	font-size: 14px;
+	border-radius: 6px;
+	height: 50px;
+	width: 75px;
+	transition: transform 0.3s ease;
+}
+
+.select-button:hover {
+	transform: scale(1.187);
+}
+
+.active {
+	background-color: green;
+	color: white;
+}
+
+#gui {
+	flex-shrink: 0;
+}
+#stats {
+	margin-left: 700px;
 }
 
 .card-full {
-	margin-top: 10px;
 	display: flex;
 	justify-content: center;
 	border: 5px solid #242424;

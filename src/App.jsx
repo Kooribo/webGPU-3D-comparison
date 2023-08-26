@@ -9,6 +9,7 @@ function App() {
 	useEffect(() => {
 		scene(isWebGPU);
 	}, [isWebGPU]);
+
 	return (
 		<>
 			<h1>3D Comparison</h1>
@@ -25,10 +26,20 @@ function App() {
 				</div>
 			) : (
 				<div className="card" id="card">
-					<select onChange={(e) => setIsWebGPU(e.target.value === "true")}>
-						<option value={false}>webGL</option>
-						<option value={true}>webGPU</option>
-					</select>
+					<div className="buttons">
+						<button
+							className={isWebGPU ? "select-button active" : "select-button"}
+							onClick={() => setIsWebGPU(true)}
+						>
+							WebGPU
+						</button>
+						<button
+							className={!isWebGPU ? "select-button active" : "select-button"}
+							onClick={() => setIsWebGPU(false)}
+						>
+							WebGL
+						</button>
+					</div>
 				</div>
 			)}
 
