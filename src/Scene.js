@@ -125,9 +125,12 @@ export default function webScene(webGPU) {
 
 	group = new THREE.Group();
 	scene.add(renderParticlesSprite(particleCount));
-	gui.add({ particleCount }, "particleCount", 1, 10000, 100).onChange((v) => {
+	gui.add({ particleCount }, "particleCount", 1, 10000, 1).onChange((v) => {
 		scene.add(renderParticlesSprite(v));
 	});
+
+	group.userData.speed = 5;
+	gui.add(group.userData, "speed", 0, 10, 1);
 
 	//start animation loop
 	if (!isRendererLoopRunning) {
@@ -168,7 +171,6 @@ function renderParticlesSprite(particleCount) {
 
 		group.add(sprite);
 	}
-
 	return group;
 }
 
@@ -192,11 +194,18 @@ function renderParticlesInstance(particleCount) {
 	mesh.count = 10;
 }
 
+var loop = [];
+var loopIndex = 0;
 // animation loop
 function render() {
+	stats.begin();
+	const startTime = performance.now();
+	const currentSpeed = group.userData.speed;
+
 	// particles group animation
 	group.children.forEach((sprite) => {
-		sprite.position.y -= Math.random() * 0.5 + 0.2; //mit Fallbeschleunigung? also wo sie sich schon befinden = schneller 9,81 m/s²
+		//add speed parameter
+		sprite.position.y -= Math.random() * currentSpeed * 0.1 + 0.2; //mit Fallbeschleunigung? also wo sie sich schon befinden = schneller 9,81 m/s²
 		//todo add wiggle (sinus) animation with userdata?
 		if (sprite.position.y < 0) {
 			sprite.position.y = 500;
@@ -217,8 +226,20 @@ function render() {
 
 	controls.update();
 	renderer.render(scene, camera);
-	stats.update();
 
+	const endTime = performance.now();
+	const frameTime = endTime - startTime;
+	loop[loopIndex] = frameTime;
+	loopIndex++;
+	if (loopIndex == 999) {
+		const sum = loop.reduce((a, b) => a + b, 0);
+		const avg = sum / loop.length || 0;
+		console.log(avg);
+		loop = [];
+		loopIndex = 0;
+	}
+
+	stats.end();
 	if (isRendererLoopRunning) {
 		requestAnimationFrame(render);
 	}
